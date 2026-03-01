@@ -1,0 +1,23 @@
+{
+  "github_repo": "",
+  "channels": {
+    "stable": {
+      "version": "1.0.0",
+      "mandatory": false,
+      "asset": {
+        "name": "SoundboardEZ.exe",
+        "url": "https://yourcdn.com/1.0.0/SoundboardEZ.exe",
+        "sha256": "PUT_REAL_HASH_HERE"
+      }
+    },
+    "beta": {
+      "version": "1.0.0-beta.1",
+      "mandatory": false,
+      "asset": {
+        "name": "SoundboardEZ-beta.exe",
+        "url": "https://yourcdn.com/1.0.0-beta.1/SoundboardEZ-beta.exe",
+        "sha256": ""
+      }
+    }
+  }
+}

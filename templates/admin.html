@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manifest Admin</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel-alt: #1c2430;
+      --text: #e6edf3;
+      --muted: #9ba7b4;
+      --line: #2a3340;
+      --accent: #4aa3ff;
+      --accent-strong: #2e82da;
+      --ok: #5bd093;
+      --danger: #ff8585;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      background: radial-gradient(circle at top left, #17202b 0%, var(--bg) 45%, #0a0f15 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    main {
+      max-width: 1320px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      letter-spacing: 0.01em;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .manifest-link {
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 14px;
+      transition: 0.2s ease;
+    }
+
+    .manifest-link:hover {
+      border-color: var(--accent);
+      color: #d6ecff;
+    }
+
+    .channels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel) 0%, var(--panel-alt) 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+    }
+
+    .channel-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .subhead {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      font-size: 0.92rem;
+      color: #d4dde6;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    select {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #10161f;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="url"]:focus,
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    .inline-control {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      border-radius: 10px;
+      border: 1px solid transparent;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text);
+      transition: 0.2s ease;
+    }
+
+    .btn.primary {
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-strong) 100%);
+      border-color: #3d8edc;
+    }
+
+    .btn.primary:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn.secondary {
+      background: #111723;
+      border-color: var(--line);
+    }
+
+    .btn.secondary:hover {
+      border-color: var(--accent);
+    }
+
+    .check-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #d4dde6;
+    }
+
+    .check-inline input {
+      accent-color: var(--accent);
+    }
+
+    .hash-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.86rem;
+      min-height: 18px;
+    }
+
+    .hash-result {
+      word-break: break-all;
+    }
+
+    .assets-view {
+      display: grid;
+      gap: 5px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f141c;
+      padding: 10px;
+      min-height: 54px;
+      max-height: 180px;
+      overflow: auto;
+    }
+
+    .asset-line {
+      display: grid;
+      gap: 2px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #253040;
+    }
+
+    .asset-line:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .asset-name {
+      font-size: 0.87rem;
+      color: #dfe9f2;
+      font-weight: 600;
+    }
+
+    .asset-url {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.82rem;
+      word-break: break-all;
+    }
+
+    .asset-url:hover {
+      text-decoration: underline;
+    }
+
+    .history-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #10161f;
+      color: #d8e2ec;
+      letter-spacing: 0.02em;
+    }
+
+    tbody tr:hover {
+      background: rgba(74, 163, 255, 0.08);
+    }
+
+    .mandatory-pill {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .optional-pill {
+      color: var(--ok);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="page-header">
+      <div>
+        <h1>Manifest Admin Panel</h1>
+        <p>Manage update channels, GitHub releases, asset metadata, and history.</p>
+      </div>
+      <a class="manifest-link" href="{{ url_for('manifest') }}" target="_blank" rel="noopener">Open /manifest</a>
+    </section>
+
+    <section class="channels-grid">
+      {% for channel in ["stable", "beta"] %}
+      {% set channel_config = config["channels"][channel] %}
+      <form
+        class="card channel-form"
+        data-channel="{{ channel }}"
+        method="post"
+        action="{{ url_for('update_channel', channel=channel, key=admin_key) }}"
+      >
+        <input type="hidden" name="key" value="{{ admin_key }}">
+
+        <div>
+          <h2>{{ channel|capitalize }} Channel</h2>
+          <p class="subhead">Control version, mandatory state, and downloadable asset details.</p>
+        </div>
+
+        <label>
+          GitHub Repository
+          <div class="inline-control">
+            <input
+              type="text"
+              name="github_repo"
+              class="repo-input"
+              placeholder="owner/repo"
+              value="{{ config.get('github_repo', '') }}"
+            >
+            <button type="button" class="btn secondary load-releases">Load Releases</button>
+          </div>
+        </label>
+
+        <label>
+          Release Tag
+          <select class="release-select">
+            <option value="{{ channel_config['version'] }}">{{ channel_config['version'] }} (current)</option>
+          </select>
+        </label>
+
+        <label>
+          Version
+          <input
+            type="text"
+            name="version"
+            class="version-input"
+            value="{{ channel_config['version'] }}"
+            required
+          >
+        </label>
+
+        <label class="check-inline">
+          <input type="checkbox" name="mandatory" {% if channel_config['mandatory'] %}checked{% endif %}>
+          Mandatory update
+        </label>
+
+        <label>
+          Release Assets
+          <select class="asset-select">
+            <option value="">Select an asset</option>
+          </select>
+        </label>
+
+        <div class="assets-view"></div>
+        <p class="release-status muted"></p>
+
+        <label>
+          Asset Name
+          <input
+            type="text"
+            name="asset_name"
+            class="asset-name-input"
+            value="{{ channel_config['asset']['name'] }}"
+            required
+          >
+        </label>
+
+        <label>
+          Download URL
+          <input
+            type="url"
+            name="asset_url"
+            class="asset-url-input"
+            value="{{ channel_config['asset']['url'] }}"
+            required
+          >
+        </label>
+
+        <label>
+          SHA256
+          <input
+            type="text"
+            name="asset_sha256"
+            class="asset-sha-input"
+            value="{{ channel_config['asset']['sha256'] }}"
+          >
+        </label>
+
+        <div class="hash-controls">
+          <button type="button" class="btn secondary compute-sha">Compute SHA256</button>
+          <label class="check-inline">
+            <input type="checkbox" class="auto-store-sha" checked>
+            Auto-fill hash field
+          </label>
+        </div>
+        <p class="hash-result muted"></p>
+
+        <button type="submit" class="btn primary">Save {{ channel|capitalize }} Config</button>
+      </form>
+      {% endfor %}
+    </section>
+
+    <section class="card history-card">
+      <h2>Update History</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp (UTC)</th>
+              <th>Channel</th>
+              <th>Old Version</th>
+              <th>New Version</th>
+              <th>Mandatory</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in history %}
+            <tr>
+              <td>{{ row['timestamp'] }}</td>
+              <td>{{ row['channel'] }}</td>
+              <td>{{ row['old_version'] }}</td>
+              <td>{{ row['new_version'] }}</td>
+              <td>
+                {% if row['mandatory'] %}
+                <span class="mandatory-pill">Yes</span>
+                {% else %}
+                <span class="optional-pill">No</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5">No updates logged yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const adminKey = {{ admin_key | tojson }};
+    const formAssets = new WeakMap();
+
+    function apiUrl(path, params = {}) {
+      const url = new URL(path, window.location.origin);
+      url.searchParams.set("key", adminKey);
+      for (const [paramName, paramValue] of Object.entries(params)) {
+        if (paramValue !== undefined && paramValue !== null && paramValue !== "") {
+          url.searchParams.set(paramName, paramValue);
+        }
+      }
+      return url.toString();
+    }
+
+    function syncRepoInputs(value, sourceInput) {
+      document.querySelectorAll(".repo-input").forEach((input) => {
+        if (input !== sourceInput) {
+          input.value = value;
+        }
+      });
+    }
+
+    function showAssetLinks(container, assets) {
+      container.textContent = "";
+      if (!assets.length) {
+        container.textContent = "No assets available for this release.";
+        return;
+      }
+
+      for (const asset of assets) {
+        const row = document.createElement("div");
+        row.className = "asset-line";
+
+        const name = document.createElement("div");
+        name.className = "asset-name";
+        name.textContent = asset.name || "(unnamed asset)";
+
+        const link = document.createElement("a");
+        link.className = "asset-url";
+        link.href = asset.url || "#";
+        link.textContent = asset.url || "Missing URL";
+        link.target = "_blank";
+        link.rel = "noopener";
+
+        row.appendChild(name);
+        row.appendChild(link);
+        container.appendChild(row);
+      }
+    }
+
+    async function loadReleases(form) {
+      const repoInput = form.querySelector(".repo-input");
+      const tagSelect = form.querySelector(".release-select");
+      const status = form.querySelector(".release-status");
+      const repo = repoInput.value.trim();
+
+      if (!repo) {
+        status.textContent = "Enter a GitHub repository in owner/repo format.";
+        return;
+      }
+
+      status.textContent = "Fetching releases...";
+      try {
+        const response = await fetch(apiUrl("/admin/api/releases", { repo }));
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || "Unable to fetch release list.");
+        }
+
+        const releases = Array.isArray(payload.releases) ? payload.releases : [];
+        const currentVersion = form.querySelector(".version-input").value.trim();
+        tagSelect.textContent = "";
+
+        const emptyOption = document.createElement("option");
+        emptyOption.value = "";
+        emptyOption.textContent = releases.length ? "Select a release tag" : "No releases found";
+        tagSelect.appendChild(emptyOption);
+
+        for (const release of releases) {
+          const option = document.createElement("option");
+          option.value = release.tag_name || "";
+          option.textContent = release.prerelease
+            ? `${release.tag_name} (pre-release)`
+            : release.tag_name;
+          if (release.tag_name === currentVersion) {
+            option.selected = true;
+          }
+          tagSelect.appendChild(option);
+        }
+
+        if (tagSelect.value) {
+          await loadAssets(form, tagSelect.value);
+        } else {
+          showAssetLinks(form.querySelector(".assets-view"), []);
+          form.querySelector(".asset-select").textContent = "";
+          const defaultAssetOption = document.createElement("option");
+          defaultAssetOption.value = "";
+          defaultAssetOption.textContent = "Select an asset";
+          form.querySelector(".asset-select").appendChild(defaultAssetOption);
+          status.textContent = releases.length ? "Releases loaded." : "No releases available.";
+        }
+      } catch (error) {
+        status.textContent = `Release fetch failed: ${error.message}`;
+      }
+    }
+
+    async function loadAssets(form, tag) {
+      const repo = form.querySelector(".repo-input").value.trim();
+      const assetSelect = form.querySelector(".asset-select");
+      const status = form.querySelector(".release-status");
+      const assetsView = form.querySelector(".assets-view");
+
+      if (!repo || !tag) {
+        formAssets.set(form, []);
+        assetSelect.textContent = "";
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select an asset";
+        assetSelect.appendChild(defaultOption);
+        showAssetLinks(assetsView, []);
+        return;
+      }
+
+      status.textContent = `Fetching assets for ${tag}...`;
+      try {
+        const response = await fetch(apiUrl("/admin/api/assets", { repo, tag }));
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || "Unable to fetch assets.");
+        }
+
+        const assets = Array.isArray(payload.assets) ? payload.assets : [];
+        formAssets.set(form, assets);
+        showAssetLinks(assetsView, assets);
+
+        assetSelect.textContent = "";
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = assets.length ? "Select an asset" : "No assets found";
+        assetSelect.appendChild(defaultOption);
+
+        assets.forEach((asset, index) => {
+          const option = document.createElement("option");
+          option.value = String(index);
+          option.textContent = asset.name || `Asset ${index + 1}`;
+          assetSelect.appendChild(option);
+        });
+
+        status.textContent = assets.length
+          ? `Loaded ${assets.length} asset(s).`
+          : "Release has no assets.";
+      } catch (error) {
+        status.textContent = `Asset fetch failed: ${error.message}`;
+      }
+    }
+
+    function selectAsset(form) {
+      const rawValue = form.querySelector(".asset-select").value;
+      if (rawValue === "") {
+        return;
+      }
+
+      const index = Number(rawValue);
+      const assets = formAssets.get(form) || [];
+      if (!Number.isInteger(index) || !assets[index]) {
+        return;
+      }
+
+      const asset = assets[index];
+      form.querySelector(".asset-name-input").value = asset.name || "";
+      form.querySelector(".asset-url-input").value = asset.url || "";
+    }
+
+    async function computeHash(form) {
+      const button = form.querySelector(".compute-sha");
+      const result = form.querySelector(".hash-result");
+      const autoFill = form.querySelector(".auto-store-sha");
+      const hashField = form.querySelector(".asset-sha-input");
+      const assetUrl = form.querySelector(".asset-url-input").value.trim();
+
+      if (!assetUrl) {
+        result.textContent = "Enter an asset URL before computing SHA256.";
+        return;
+      }
+
+      result.textContent = "Computing SHA256...";
+      button.disabled = true;
+      try {
+        const response = await fetch(apiUrl("/admin/api/sha256"), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ url: assetUrl })
+        });
+
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.error || "Unable to compute SHA256.");
+        }
+
+        const hashValue = payload.sha256 || "";
+        if (autoFill.checked) {
+          hashField.value = hashValue;
+        }
+        result.textContent = `SHA256: ${hashValue}`;
+      } catch (error) {
+        result.textContent = `Hash compute failed: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function initChannelForm(form) {
+      const repoInput = form.querySelector(".repo-input");
+      const loadButton = form.querySelector(".load-releases");
+      const tagSelect = form.querySelector(".release-select");
+      const assetSelect = form.querySelector(".asset-select");
+      const hashButton = form.querySelector(".compute-sha");
+      const versionInput = form.querySelector(".version-input");
+
+      repoInput.addEventListener("input", () => {
+        syncRepoInputs(repoInput.value, repoInput);
+      });
+
+      loadButton.addEventListener("click", () => loadReleases(form));
+
+      tagSelect.addEventListener("change", async () => {
+        const selectedTag = tagSelect.value;
+        if (selectedTag) {
+          versionInput.value = selectedTag;
+        }
+        await loadAssets(form, selectedTag);
+      });
+
+      assetSelect.addEventListener("change", () => selectAsset(form));
+      hashButton.addEventListener("click", () => computeHash(form));
+
+      if (repoInput.value.trim()) {
+        loadReleases(form);
+      } else {
+        showAssetLinks(form.querySelector(".assets-view"), []);
+      }
+    }
+
+    document.querySelectorAll(".channel-form").forEach((form) => {
+      initChannelForm(form);
+    });
+  </script>
+</body>
+</html>
