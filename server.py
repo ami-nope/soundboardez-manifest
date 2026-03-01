@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 
-app = Flask(__name__)
+app = Flask(__main__)
 
 @app.route("/manifest")
 def manifest():
